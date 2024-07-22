@@ -7,8 +7,7 @@ public class BallSpawner2 : MonoBehaviour
     [SerializeField] private GameObject[] prefabs;
     [SerializeField] private int ballsToSpawn;
     [SerializeField] private float spawnDelay;
-    [SerializeField] private int ballMaxSpeed;
-    [SerializeField] private PhysicsMaterial2D ballBounciness;
+    [SerializeField] private float ballGrowSpeed;
 
     [SerializeField] private Color[] ballColors;
 
@@ -16,8 +15,10 @@ public class BallSpawner2 : MonoBehaviour
     private int ballsSpawned;
     private int currentBalls;
     private int whatToDestroy = 0;
-    private GameManager1 gameManager;
+    private GameManager2 gameManager;
     private float shapeSize = 1.0f;
+    private float sizeToDouble = 2.0f;
+    private int howManyNew = 2;
 
     private List<GameObject> balls = new List<GameObject>();
 
@@ -27,7 +28,9 @@ public class BallSpawner2 : MonoBehaviour
     {
         prefab = prefabs[0];
         currentBalls = 0;
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager1>();
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager2>();
+
+        DefaultValues();
 
         currentDelay = spawnDelay;
     }
@@ -36,12 +39,9 @@ public class BallSpawner2 : MonoBehaviour
     {
         if (!gameManager.RunSimulation()) return;
 
-        //transform.localScale = new Vector3(shapeSize, shapeSize, 1);
+        MakeShapesGrow();
 
-        foreach (Transform child in transform)
-        {
-            child.localScale = new Vector3(shapeSize, shapeSize, 1);
-        }
+        transform.localScale = new Vector3(shapeSize, shapeSize, 1);
 
         if (ballsSpawned >= ballsToSpawn)
         {
@@ -59,19 +59,33 @@ public class BallSpawner2 : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    private void MakeShapesGrow()
     {
-        foreach (GameObject ball in balls)
+        for (int i = balls.Count - 1; i >= 0; i--)
         {
-            Rigidbody2D ballRigidbody = ball.GetComponent<Rigidbody2D>();
-            if (ballRigidbody.velocity.magnitude > ballMaxSpeed)
+            GameObject ball = balls[i];
+            ball.transform.localScale += new Vector3(ballGrowSpeed * Time.deltaTime, ballGrowSpeed * Time.deltaTime, 0);
+
+            if (ball.transform.localScale.x >= sizeToDouble)
             {
-                ballRigidbody.velocity = ballRigidbody.velocity.normalized * ballMaxSpeed;
+                balls.RemoveAt(i);
+                Destroy(ball);
+                currentBalls--;
+                gameManager.SetCurrentBalls(currentBalls);
+
+                for (int j = 0; j < howManyNew; j++)
+                {
+                    SpawnBall();
+                }
             }
         }
+    }
 
+    private void FixedUpdate()
+    {
         CheckCollisions();
     }
+
 
     void CheckCollisions()
     {
@@ -134,7 +148,7 @@ public class BallSpawner2 : MonoBehaviour
     {
         ballsSpawned++;
         currentBalls++;
-        var ball = Instantiate(prefab, RandomLocation().position, Quaternion.identity, RandomLocation());
+        var ball = Instantiate(prefab, RandomLocation(), Quaternion.identity, transform);
 
         var random = Random.Range(0, ballColors.Length);
 
@@ -150,11 +164,12 @@ public class BallSpawner2 : MonoBehaviour
         gameManager.SetCurrentBalls(currentBalls);
     }
 
-    private Transform RandomLocation()
+    private Vector3 RandomLocation()
     {
-        var random = Random.Range(0, transform.childCount);
+        var randomX = Random.Range(-8.5f, 5f);
+        var randomY = Random.Range(-3.25f, 3.25f);
 
-        return transform.GetChild(random);
+        return new Vector3(randomX, randomY, 0);
     }
 
     private Color GetRandomColor()
@@ -185,23 +200,13 @@ public class BallSpawner2 : MonoBehaviour
         }
     }
 
-    public void SetBallMaxSpeed()
+    public void SetGrowSpeed()
     {
         var input = gameManager.GetSettingsTransform().GetChild(3).GetComponent<TMPro.TMP_InputField>().text;
 
-        if (int.TryParse(input, out int result))
-        {
-            ballMaxSpeed = result;
-        }
-    }
-
-    public void SetBallBounciness()
-    {
-        var input = gameManager.GetSettingsTransform().GetChild(4).GetComponent<TMPro.TMP_InputField>().text;
-
         if (float.TryParse(input, out float result))
         {
-            ballBounciness.bounciness = result;
+            ballGrowSpeed = result;
         }
     }
 
@@ -215,26 +220,56 @@ public class BallSpawner2 : MonoBehaviour
         prefab = prefabs[gameManager.GetSettingsTransform().GetChild(6).GetComponent<TMPro.TMP_Dropdown>().value];
     }
 
-    public void SetShapeSize()
+    public void SetHowManyNew()
     {
         var input = gameManager.GetSettingsTransform().GetChild(7).GetComponent<TMPro.TMP_InputField>().text;
 
+        if (int.TryParse(input, out int result))
+        {
+            howManyNew = result;
+        }
+    }
+
+    public void SetSizeToSpawnNew()
+    {
+        var input = gameManager.GetSettingsTransform().GetChild(4).GetComponent<TMPro.TMP_InputField>().text;
+
         if (float.TryParse(input, out float result))
         {
-            if (result < 0.1f)
-            {
-                shapeSize = 0.1f;
-                return;
-            }
-            else if (result > 2.0f)
-            {
-                shapeSize = 2.0f;
-                return;
-            }
+            sizeToDouble = result;
+        }
+    }
 
-            shapeSize = result;
+    private void DefaultValues()
+    {
+        var input = gameManager.GetSettingsTransform().GetChild(4).GetComponent<TMPro.TMP_InputField>().text;
 
-            Debug.Log(shapeSize);
+        if (float.TryParse(input, out float result))
+        {
+            sizeToDouble = result;
+        }
+
+        var input2 = gameManager.GetSettingsTransform().GetChild(7).GetComponent<TMPro.TMP_InputField>().text;
+
+        if (int.TryParse(input2, out int result2))
+        {
+            howManyNew = result2;
+        }
+        prefab = prefabs[gameManager.GetSettingsTransform().GetChild(6).GetComponent<TMPro.TMP_Dropdown>().value];
+        whatToDestroy = gameManager.GetSettingsTransform().GetChild(5).GetComponent<TMPro.TMP_Dropdown>().value;
+
+        var input3 = gameManager.GetSettingsTransform().GetChild(3).GetComponent<TMPro.TMP_InputField>().text;
+
+        if (float.TryParse(input3, out float result3))
+        {
+            ballGrowSpeed = result3;
+        }
+
+        var input4 = gameManager.GetSettingsTransform().GetChild(2).GetComponent<TMPro.TMP_InputField>().text;
+
+        if (int.TryParse(input4, out int result4))
+        {
+            ballsToSpawn = result4;
         }
     }
 }

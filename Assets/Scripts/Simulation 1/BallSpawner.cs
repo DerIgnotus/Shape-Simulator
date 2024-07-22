@@ -26,6 +26,8 @@ public class BallSpawner : MonoBehaviour
         prefab = prefabs[0];
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         currentDelay = spawnDelay;
+
+        DefaultValues();
     }
 
     void Update()
@@ -144,6 +146,48 @@ public class BallSpawner : MonoBehaviour
             }
 
             shapeSize = result;
+        }
+    }
+
+    private void DefaultValues()
+    {
+        var input = gameManager.GetSettingsTransform().GetChild(6).GetComponent<TMPro.TMP_InputField>().text;
+
+        if (float.TryParse(input, out float result))
+        {
+            if (result < 0.1f)
+            {
+                shapeSize = 0.1f;
+                return;
+            }
+            else if (result > 10.0f)
+            {
+                shapeSize = 10.0f;
+                return;
+            }
+
+            shapeSize = result;
+        }
+
+        var input2 = gameManager.GetSettingsTransform().GetChild(4).GetComponent<TMPro.TMP_InputField>().text;
+
+        if (float.TryParse(input2, out float result2))
+        {
+            ballBounciness.bounciness = result2;
+        }
+
+        var input3 = gameManager.GetSettingsTransform().GetChild(3).GetComponent<TMPro.TMP_InputField>().text;
+
+        if (int.TryParse(input3, out int result3))
+        {
+            ballMaxSpeed = result3;
+        }
+
+        var input4 = gameManager.GetSettingsTransform().GetChild(2).GetComponent<TMPro.TMP_InputField>().text;
+
+        if (int.TryParse(input4, out int result4))
+        {
+            ballsToSpawn = result4;
         }
     }
 }

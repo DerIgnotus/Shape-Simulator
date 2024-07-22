@@ -41,6 +41,8 @@ public class GameManager1 : MonoBehaviour
         simulation.gameObject.SetActive(false);
         simulationStats.gameObject.SetActive(false);
         timeLeft = updateInterval;
+
+        simulationTime = int.Parse(settings.GetChild(1).GetComponent<TMPro.TMP_InputField>().text);
     }
 
     private void Update()

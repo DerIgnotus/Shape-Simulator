@@ -5,10 +5,11 @@ using UnityEngine;
 public class GameManager2 : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private BallSpawner1 ballSpawner;
+    [SerializeField] private BallSpawner2 ballSpawner;
     [SerializeField] private Transform settings;
     [SerializeField] private Transform simulation;
     [SerializeField] private Transform simulationStats;
+    [SerializeField] private Transform walls;
 
     private Transform ballsSpawnedText;
     private Transform fpsText;
@@ -30,6 +31,7 @@ public class GameManager2 : MonoBehaviour
 
     void Start()
     {
+        walls.gameObject.SetActive(false);
         simulation.gameObject.SetActive(true);
 
         fpsText = simulation.GetChild(0);
@@ -41,6 +43,8 @@ public class GameManager2 : MonoBehaviour
         simulation.gameObject.SetActive(false);
         simulationStats.gameObject.SetActive(false);
         timeLeft = updateInterval;
+
+        simulationTime = int.Parse(settings.GetChild(1).GetComponent<TMPro.TMP_InputField>().text);
     }
 
     private void Update()
@@ -102,6 +106,7 @@ public class GameManager2 : MonoBehaviour
 
     public void StartSimulation()
     {
+        walls.gameObject.SetActive(true);
         currentBallsPub = 0;
         ballsSpawned = 0;
         inSimulation = true;
@@ -117,6 +122,7 @@ public class GameManager2 : MonoBehaviour
 
     public void StopSimulation()
     {
+        walls.gameObject.SetActive(false);
         inSimulation = false;
         settings.gameObject.SetActive(true);
         simulation.gameObject.SetActive(false);
@@ -132,8 +138,6 @@ public class GameManager2 : MonoBehaviour
     public void SetSimulationTime()
     {
         simulationTime = int.Parse(settings.GetChild(1).GetComponent<TMPro.TMP_InputField>().text);
-
-        Debug.Log(simulationTime);
 
         currentTime = 0;
     }
