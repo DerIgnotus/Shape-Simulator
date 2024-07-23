@@ -16,6 +16,7 @@ public class CircleScript1 : MonoBehaviour
         if (other.gameObject.CompareTag("Ball"))
         {
             gameManager.SpawnBall();
+            Camera.main.GetComponent<AudioSource>().Play();
         }
     }
 }

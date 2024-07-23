@@ -61,6 +61,17 @@ public class BallSpawner : MonoBehaviour
                 ball.velocity = ball.velocity.normalized * ballMaxSpeed;
             }
         }
+
+        for (int i = 0; i < balls.Count; i++)
+        {
+            for (int j = i + 1; j < balls.Count; j++)
+            {
+                if (balls[i].GetComponent<Collider2D>().IsTouching(balls[j].GetComponent<Collider2D>()))
+                {
+                    Camera.main.GetComponent<AudioSource>().Play();
+                }
+            }
+        }
     }
 
     public void SpawnBall()

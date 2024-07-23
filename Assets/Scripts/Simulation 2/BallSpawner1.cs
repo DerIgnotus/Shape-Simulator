@@ -91,6 +91,7 @@ public class BallSpawner1 : MonoBehaviour
 
     void OnBallCollision(GameObject ball1, GameObject ball2)
     {
+        Camera.main.GetComponent<AudioSource>().Play();
         if (whatToDestroy == 0)
         {
             Destroy(ball1);

@@ -6,6 +6,18 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/CrazySDK/Demo/LoadingScene.unity
+    guid: d34c3ed37bb0fd745b38d55bc61e21c8
+  - enabled: 1
+    path: Assets/Scenes/Start.unity
+    guid: 2934c64ce2591774f9dd5479b9676e4d
+  - enabled: 1
     path: Assets/Scenes/Simulation 1.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Scenes/Simulation 2.unity
+    guid: 300dd934ca031174988313e11313c10a
+  - enabled: 1
+    path: Assets/Scenes/Simulation 3.unity
+    guid: 4adab3d05c2036d4a912f129d477094c
   m_configObjects: {}

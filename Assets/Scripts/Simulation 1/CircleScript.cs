@@ -16,6 +16,7 @@ public class CircleScript : MonoBehaviour
         if (other.gameObject.CompareTag("Ball"))
         {
             gameManager.BallHit();
+            Camera.main.GetComponent<AudioSource>().Play();
         }
     }
 }

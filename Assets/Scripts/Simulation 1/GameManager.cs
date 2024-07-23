@@ -97,6 +97,8 @@ public class GameManager : MonoBehaviour
 
     public void StartSimulation()
     {
+        ADManager.Instance.IncrementAdCounter();
+
         ballsSpawned = 0;
         inSimulation = true;
         settings.gameObject.SetActive(false);
